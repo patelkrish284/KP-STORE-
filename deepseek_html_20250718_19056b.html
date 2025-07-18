@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KP STORE - Premium App Store</title>
+    <meta name="description" content="Discover amazing apps, games and tools at KP STORE. Download premium apps for free!">
+    <meta property="og:title" content="KP STORE - Premium App Store">
+    <meta property="og:description" content="Discover amazing apps, games and tools at KP STORE. Download premium apps for free!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://kpstore.example.com">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glow: 0 0 15px rgba(108, 92, 231, 0.5);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            transition: all 0.3s ease;
+        }
+
+        .glass {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glow);
+        }
+
+        .glass:hover {
+            box-shadow: 0 0 25px rgba(108, 92, 231, 0.7);
+        }
+
+        .card-glow {
+            transition: all 0.3s ease;
+        }
+
+        .card-glow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+        }
+
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .zoom-in {
+            animation: zoomIn 0.3s ease-out;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .slide-up {
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .badge-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(253, 121, 168, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(253, 121, 168, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(253, 121, 168, 0); }
+        }
+
+        .theme-toggle {
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(30deg);
+        }
+
+        .high-contrast {
+            --primary: #000;
+            --secondary: #333;
+            --accent: #fff;
+            --dark: #000;
+            --light: #fff;
+            --glass: rgba(255, 255, 255, 0.2);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glow: 0 0 15px rgba(255, 255, 255, 0.8);
+        }
+
+        .light-mode {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --dark: #f5f6fa;
+            --light: #2d3436;
+            --glass: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --glow: 0 0 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .admin-panel {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .admin-panel.open {
+            transform: translateX(0);
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .tag-new {
+            background: linear-gradient(45deg, #00b894, #55efc4);
+        }
+
+        .tag-mod {
+            background: linear-gradient(45deg, #0984e3, #74b9ff);
+        }
+
+        .tag-vip {
+            background: linear-gradient(45deg, #fdcb6e, #ffeaa7);
+            color: #2d3436;
+        }
+
+        .tag-trending {
+            background: linear-gradient(45deg, #e84393, #fd79a8);
+        }
+
+        .star-rating {
+            color: #fdcb6e;
+        }
+
+        .most-viewed-badge {
+            background: linear-gradient(45deg, #e84393, #fd79a8);
+            animation: pulse 1.5s infinite;
+        }
+
+        .search-dropdown {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .toast {
+            animation: slideIn 0.3s ease-out, fadeOut 0.5s ease-in 2.5s forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; }
+        }
+
+        .maintenance-overlay {
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .pin-popup {
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .press-animation {
+            animation: pulseScale 2s infinite;
+        }
+
+        @keyframes pulseScale {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .app-card {
+                width: 100%;
+            }
+            
+            .admin-panel {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body class="relative">
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-dark z-50 flex flex-col items-center justify-center">
+        <div class="text-4xl font-bold mb-8 shimmer" style="background-clip: text; color: transparent;">KP STORE</div>
+        <div class="loading-spinner"></div>
+        <p class="mt-8 text-secondary">Loading premium apps...</p>
+    </div>
+
+    <!-- Maintenance Mode Overlay -->
+    <div id="maintenanceOverlay" class="fixed inset-0 bg-dark bg-opacity-90 z-40 maintenance-overlay hidden flex items-center justify-center">
+        <div class="glass p-8 rounded-xl max-w-md text-center">
+            <h2 class="text-2xl font-bold text-accent mb-4">🚧 Maintenance Mode</h2>
+            <p class="mb-6">KP STORE is currently undergoing maintenance. We'll be back soon with exciting updates!</p>
+            <div class="animate-pulse">
+                <i class="fas fa-tools text-4xl text-primary"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN Popup (Hidden by default) -->
+    <div id="pinPopup" class="fixed inset-0 bg-dark bg-opacity-80 z-50 flex items-center justify-center hidden pin-popup">
+        <div class="glass p-8 rounded-xl max-w-md w-full zoom-in">
+            <h2 class="text-2xl font-bold text-primary mb-6 text-center">Admin Login</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="adminPin" class="block text-sm font-medium mb-1">Enter PIN</label>
+                    <input type="password" id="adminPin" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="••••" maxlength="4">
+                </div>
+                <button id="loginBtn" class="w-full bg-primary text-white py-2 rounded-lg hover:bg-opacity-90 transition ripple">
+                    Login
+                </button>
+                <button id="cancelLoginBtn" class="w-full bg-dark bg-opacity-50 text-white py-2 rounded-lg hover:bg-opacity-70 transition">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Elements -->
+    <div id="backgroundContainer" class="fixed inset-0 -z-10 overflow-hidden">
+        <div id="backgroundOverlay" class="absolute inset-0 bg-dark bg-opacity-70"></div>
+        <img id="backgroundImage" class="absolute inset-0 w-full h-full object-cover hidden" src="" alt="Background">
+        <video id="backgroundVideo" class="absolute inset-0 w-full h-full object-cover hidden" autoplay muted loop></video>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 relative">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8 glass p-4 rounded-xl">
+            <div class="flex items-center">
+                <h1 id="storeTitle" class="text-2xl font-bold text-primary press-animation">KP STORE</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="themeToggle" class="theme-toggle p-2 rounded-full glass hover:bg-opacity-30">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="contrastToggle" class="p-2 rounded-full glass hover:bg-opacity-30">
+                    <i class="fas fa-adjust"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Banner -->
+        <div id="bannerContainer" class="mb-8 rounded-xl overflow-hidden glass">
+            <div id="imageBanner" class="hidden">
+                <img id="bannerImage" class="w-full h-auto max-h-64 object-cover" src="" alt="Banner">
+            </div>
+            <div id="videoBanner" class="hidden">
+                <video id="bannerVideo" class="w-full h-auto max-h-64 object-cover" autoplay muted loop></video>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="glass p-4 rounded-xl mb-8 relative">
+            <div class="flex items-center">
+                <input id="searchInput" type="text" placeholder="Search apps..." 
+                    class="flex-grow bg-dark bg-opacity-50 border border-glass-border rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                <button id="searchBtn" class="bg-primary text-white px-4 py-2 rounded-r-lg hover:bg-opacity-90 transition">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div id="searchDropdown" class="absolute left-0 right-0 mt-1 bg-dark border border-glass-border rounded-lg shadow-lg z-10 hidden search-dropdown"></div>
+            <div id="filterTags" class="flex flex-wrap gap-2 mt-3 hidden">
+                <button class="tag tag-new px-2 py-1 text-xs">NEW</button>
+                <button class="tag tag-mod px-2 py-1 text-xs">MOD</button>
+                <button class="tag tag-vip px-2 py-1 text-xs">VIP</button>
+                <button class="tag tag-trending px-2 py-1 text-xs">TRENDING</button>
+            </div>
+        </div>
+
+        <!-- App Sections -->
+        <div id="appSections" class="space-y-12">
+            <!-- Sections will be dynamically loaded here -->
+        </div>
+
+        <!-- Floating Contact Button -->
+        <div id="contactButton" class="fixed bottom-6 right-6 z-30">
+            <a href="#" class="bg-primary text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-opacity-90 transition ripple">
+                <i class="fas fa-paper-plane text-xl"></i>
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <footer class="glass mt-12 p-6 rounded-xl text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a id="ytLink" href="#" class="text-secondary hover:text-accent transition"><i class="fab fa-youtube text-xl"></i></a>
+                <a id="tgLink" href="#" class="text-secondary hover:text-accent transition"><i class="fab fa-telegram text-xl"></i></a>
+                <a id="igLink" href="#" class="text-secondary hover:text-accent transition"><i class="fab fa-instagram text-xl"></i></a>
+            </div>
+            <p id="footerText" class="text-sm text-secondary">© 2023 KP STORE. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-dark text-white px-6 py-3 rounded-full shadow-lg glass hidden toast">
+        <span id="toastMessage">Notification message</span>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="admin-panel fixed top-0 right-0 h-full w-96 bg-dark border-l border-glass-border overflow-y-auto z-50">
+        <div class="p-4 border-b border-glass-border flex justify-between items-center">
+            <h2 class="text-xl font-bold text-primary">Admin Panel</h2>
+            <button id="closeAdminPanel" class="text-secondary hover:text-accent transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="p-4 border-b border-glass-border flex space-x-2 overflow-x-auto">
+            <button data-tab="dashboard" class="admin-tab active px-4 py-2 rounded-lg bg-primary bg-opacity-20">Dashboard</button>
+            <button data-tab="addApp" class="admin-tab px-4 py-2 rounded-lg hover:bg-glass">Add App</button>
+            <button data-tab="manageApps" class="admin-tab px-4 py-2 rounded-lg hover:bg-glass">Manage Apps</button>
+            <button data-tab="settings" class="admin-tab px-4 py-2 rounded-lg hover:bg-glass">Settings</button>
+        </div>
+
+        <div class="p-4">
+            <!-- Dashboard Tab -->
+            <div id="dashboardTab" class="tab-content active space-y-6">
+                <div class="glass p-4 rounded-xl">
+                    <h3 class="text-lg font-bold mb-4">📊 Analytics Overview</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="glass p-3 rounded-lg">
+                            <p class="text-sm text-secondary">Total Apps</p>
+                            <p id="totalApps" class="text-2xl font-bold">0</p>
+                        </div>
+                        <div class="glass p-3 rounded-lg">
+                            <p class="text-sm text-secondary">Total Views</p>
+                            <p id="totalViews" class="text-2xl font-bold">0</p>
+                        </div>
+                        <div class="glass p-3 rounded-lg">
+                            <p class="text-sm text-secondary">Most Viewed</p>
+                            <p id="mostViewedApp" class="text-lg font-bold truncate">-</p>
+                        </div>
+                        <div class="glass p-3 rounded-lg">
+                            <p class="text-sm text-secondary">Most Downloaded</p>
+                            <p id="mostDownloadedApp" class="text-lg font-bold truncate">-</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass p-4 rounded-xl">
+                    <h3 class="text-lg font-bold mb-4">🚀 Quick Actions</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button id="refreshStatsBtn" class="px-3 py-1 bg-primary bg-opacity-20 rounded-lg hover:bg-opacity-30 transition">Refresh Stats</button>
+                        <button id="clearCacheBtn" class="px-3 py-1 bg-primary bg-opacity-20 rounded-lg hover:bg-opacity-30 transition">Clear Cache</button>
+                        <button id="backupDataBtn" class="px-3 py-1 bg-primary bg-opacity-20 rounded-lg hover:bg-opacity-30 transition">Backup Data</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add App Tab -->
+            <div id="addAppTab" class="tab-content">
+                <div class="glass p-4 rounded-xl space-y-4">
+                    <h3 class="text-lg font-bold mb-2">📦 Add New App</h3>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">App Name</label>
+                        <input id="appName" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Icon URL</label>
+                        <input id="appIcon" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="https://example.com/icon.png">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Download Link</label>
+                        <input id="appLink" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="https://example.com/download">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Button Text</label>
+                        <input id="appBtnText" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Download Now">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Description</label>
+                        <textarea id="appDesc" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary" rows="3"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Tags</label>
+                        <div class="flex flex-wrap gap-2">
+                            <label class="flex items-center space-x-1">
+                                <input type="checkbox" class="tag-checkbox" value="NEW">
+                                <span class="tag tag-new px-2 py-1 text-xs">NEW</span>
+                            </label>
+                            <label class="flex items-center space-x-1">
+                                <input type="checkbox" class="tag-checkbox" value="MOD">
+                                <span class="tag tag-mod px-2 py-1 text-xs">MOD</span>
+                            </label>
+                            <label class="flex items-center space-x-1">
+                                <input type="checkbox" class="tag-checkbox" value="VIP">
+                                <span class="tag tag-vip px-2 py-1 text-xs">VIP</span>
+                            </label>
+                            <label class="flex items-center space-x-1">
+                                <input type="checkbox" class="tag-checkbox" value="TRENDING">
+                                <span class="tag tag-trending px-2 py-1 text-xs">TRENDING</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Rating (1-5)</label>
+                        <select id="appRating" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="0">No rating</option>
+                            <option value="1">1 ★</option>
+                            <option value="2">2 ★★</option>
+                            <option value="3">3 ★★★</option>
+                            <option value="4">4 ★★★★</option>
+                            <option value="5">5 ★★★★★</option>
+                        </select>
+                    </div>
+                    <div class="pt-2">
+                        <button id="submitAppBtn" class="w-full bg-primary text-white py-2 rounded-lg hover:bg-opacity-90 transition ripple">
+                            Add App
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Apps Tab -->
+            <div id="manageAppsTab" class="tab-content">
+                <div class="glass p-4 rounded-xl">
+                    <h3 class="text-lg font-bold mb-4">⚙️ Manage Apps</h3>
+                    <div class="mb-4">
+                        <input id="manageSearch" type="text" placeholder="Search apps..." class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div id="appsList" class="space-y-3 max-h-96 overflow-y-auto">
+                        <!-- Apps will be listed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="tab-content">
+                <div class="glass p-4 rounded-xl space-y-6">
+                    <h3 class="text-lg font-bold mb-4">🎨 Site Settings</h3>
+                    
+                    <div>
+                        <h4 class="font-medium mb-2">Banner Settings</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Banner Type</label>
+                                <select id="bannerType" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="image">Image</option>
+                                    <option value="video">Video</option>
+                                    <option value="none">None</option>
+                                </select>
+                            </div>
+                            <div id="bannerImageContainer">
+                                <label class="block text-sm font-medium mb-1">Banner Image URL</label>
+                                <input id="bannerImageUrl" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div id="bannerVideoContainer" class="hidden">
+                                <label class="block text-sm font-medium mb-1">Banner Video URL</label>
+                                <input id="bannerVideoUrl" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium mb-2">Background Settings</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Background Type</label>
+                                <select id="backgroundType" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="image">Image</option>
+                                    <option value="video">Video</option>
+                                    <option value="none">None</option>
+                                </select>
+                            </div>
+                            <div id="bgImageContainer">
+                                <label class="block text-sm font-medium mb-1">Background Image URL</label>
+                                <input id="bgImageUrl" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div id="bgVideoContainer" class="hidden">
+                                <label class="block text-sm font-medium mb-1">Background Video URL</label>
+                                <input id="bgVideoUrl" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium mb-2">Site Information</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Site Title</label>
+                                <input id="siteTitle" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Footer Text</label>
+                                <input id="footerTextInput" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Default Button Text</label>
+                                <input id="defaultBtnText" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Download Now">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium mb-2">Social Links</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">YouTube</label>
+                                <input id="ytLinkInput" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Telegram</label>
+                                <input id="tgLinkInput" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Instagram</label>
+                                <input id="igLinkInput" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium mb-2">Site Behavior</h4>
+                        <div class="space-y-3">
+                            <label class="flex items-center justify-between">
+                                <span class="text-sm font-medium">Maintenance Mode</span>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                                    <input type="checkbox" id="maintenanceToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                    <label for="maintenanceToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </label>
+                            <label class="flex items-center justify-between">
+                                <span class="text-sm font-medium">Show Ratings</span>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                                    <input type="checkbox" id="ratingsToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                                    <label for="ratingsToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </label>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Site Theme</label>
+                                <select id="siteTheme" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="dark">Dark</option>
+                                    <option value="light">Light</option>
+                                    <option value="auto">Auto (System)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium mb-2">Admin Security</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Change Admin PIN</label>
+                                <input id="newAdminPin" type="password" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="New PIN (4 digits)">
+                            </div>
+                            <button id="changePinBtn" class="w-full bg-primary text-white py-2 rounded-lg hover:bg-opacity-90 transition ripple">
+                                Update PIN
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-2">
+                        <button id="saveSettingsBtn" class="w-full bg-primary text-white py-2 rounded-lg hover:bg-opacity-90 transition ripple">
+                            Save All Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit App Modal -->
+    <div id="editAppModal" class="fixed inset-0 bg-dark bg-opacity-80 z-50 flex items-center justify-center hidden">
+        <div class="glass p-8 rounded-xl max-w-md w-full zoom-in">
+            <h2 class="text-2xl font-bold text-primary mb-6 text-center">Edit App</h2>
+            <div class="space-y-4">
+                <input type="hidden" id="editAppId">
+                <div>
+                    <label class="block text-sm font-medium mb-1">App Name</label>
+                    <input id="editAppName" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Icon URL</label>
+                    <input id="editAppIcon" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Download Link</label>
+                    <input id="editAppLink" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Button Text</label>
+                    <input id="editAppBtnText" type="text" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Description</label>
+                    <textarea id="editAppDesc" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary" rows="3"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Tags</label>
+                    <div class="flex flex-wrap gap-2">
+                        <label class="flex items-center space-x-1">
+                            <input type="checkbox" class="edit-tag-checkbox" value="NEW">
+                            <span class="tag tag-new px-2 py-1 text-xs">NEW</span>
+                        </label>
+                        <label class="flex items-center space-x-1">
+                            <input type="checkbox" class="edit-tag-checkbox" value="MOD">
+                            <span class="tag tag-mod px-2 py-1 text-xs">MOD</span>
+                        </label>
+                        <label class="flex items-center space-x-1">
+                            <input type="checkbox" class="edit-tag-checkbox" value="VIP">
+                            <span class="tag tag-vip px-2 py-1 text-xs">VIP</span>
+                        </label>
+                        <label class="flex items-center space-x-1">
+                            <input type="checkbox" class="edit-tag-checkbox" value="TRENDING">
+                            <span class="tag tag-trending px-2 py-1 text-xs">TRENDING</span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Rating (1-5)</label>
+                    <select id="editAppRating" class="w-full bg-dark bg-opacity-50 border border-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option value="0">No rating</option>
+                        <option value="1">1 ★</option>
+                        <option value="2">2 ★★</option>
+                        <option value="3">3 ★★★</option>
+                        <option value="4">4 ★★★★</option>
+                        <option value="5">5 ★★★★★</option>
+                    </select>
+                </div>
+                <div class="flex space-x-2 pt-2">
+                    <button id="updateAppBtn" class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-opacity-90 transition ripple">
+                        Update
+                    </button>
+                    <button id="deleteAppBtn" class="flex-1 bg-accent text-white py-2 rounded-lg hover:bg-opacity-90 transition">
+                        Delete
+                    </button>
+                </div>
+                <button id="cancelEditBtn" class="w-full bg-dark bg-opacity-50 text-white py-2 rounded-lg hover:bg-opacity-70 transition">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline Fallback -->
+    <div id="offlineFallback" class="fixed inset-0 bg-dark z-50 flex flex-col items-center justify-center hidden">
+        <div class="text-center p-8 max-w-md">
+            <i class="fas fa-wifi text-5xl text-accent mb-4"></i>
+            <h2 class="text-2xl font-bold mb-2">No Internet Connection</h2>
+            <p class="text-secondary mb-6">KP STORE is currently unavailable offline. Please check your connection and try again.</p>
+            <button id="retryConnectionBtn" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition">
+                Retry
+            </button>
+        </div>
+    </div>
+
+    <!-- Service Worker Registration -->
+    <script>
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('ServiceWorker registration successful');
+                }).catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+
+    <!-- Main Application Script -->
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBZbnzwwgZ0E3AOrPpwLWOcRJDxNYSY5k",
+            authDomain: "krish-e062a.firebaseapp.com",
+            databaseURL: "https://krish-e062a-default-rtdb.firebaseio.com",
+            projectId: "krish-e062a",
+            storageBucket: "krish-e062a.appspot.com",
+            messagingSenderId: "667078887677",
+            appId: "1:667078887677:web:b94348c106c6f3e16d5694",
+            measurementId: "G-HT8G94QVDQ"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+        // DOM Elements
+        const loadingScreen = document.getElementById('loadingScreen');
+        const maintenanceOverlay = document.getElementById('maintenanceOverlay');
+        const pinPopup = document.getElementById('pinPopup');
+        const storeTitle = document.getElementById('storeTitle');
+        const adminPanel = document.getElementById('adminPanel');
+        const closeAdminPanel = document.getElementById('closeAdminPanel');
+        const adminPin = document.getElementById('adminPin');
+        const loginBtn = document.getElementById('loginBtn');
+        const cancelLoginBtn = document.getElementById('cancelLoginBtn');
+        const themeToggle = document.getElementById('themeToggle');
+        const contrastToggle = document.getElementById('contrastToggle');
+        const bannerContainer = document.getElementById('bannerContainer');
+        const imageBanner = document.getElementById('imageBanner');
+        const videoBanner = document.getElementById('videoBanner');
+        const bannerImage = document.getElementById('bannerImage');
+        const bannerVideo = document.getElementById('bannerVideo');
+        const backgroundContainer = document.getElementById('backgroundContainer');
+        const backgroundImage = document.getElementById('backgroundImage');
+        const backgroundVideo = document.getElementById('backgroundVideo');
+        const backgroundOverlay = document.getElementById('backgroundOverlay');
+        const appSections = document.getElementById('appSections');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchDropdown = document.getElementById('searchDropdown');
+        const filterTags = document.getElementById('filterTags');
+        const contactButton = document.getElementById('contactButton');
+        const footerText = document.getElementById('footerText');
+        const ytLink = document.getElementById('ytLink');
+        const tgLink = document.getElementById('tgLink');
+        const igLink = document.getElementById('igLink');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const offlineFallback = document.getElementById('offlineFallback');
+        const retryConnectionBtn = document.getElementById('retryConnectionBtn');
+
+        // Admin Panel Elements
+        const adminTabs = document.querySelectorAll('.admin-tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const totalApps = document.getElementById('totalApps');
+        const totalViews = document.getElementById('totalViews');
+        const mostViewedApp = document.getElementById('mostViewedApp');
+        const mostDownloadedApp = document.getElementById('mostDownloadedApp');
+        const refreshStatsBtn = document.getElementById('refreshStatsBtn');
+        const clearCacheBtn = document.getElementById('clearCacheBtn');
+        const backupDataBtn = document.getElementById('backupDataBtn');
+        const appName = document.getElementById('appName');
+        const appIcon = document.getElementById('appIcon');
+        const appLink = document.getElementById('appLink');
+        const appBtnText = document.getElementById('appBtnText');
+        const appDesc = document.getElementById('appDesc');
+        const appRating = document.getElementById('appRating');
+        const submitAppBtn = document.getElementById('submitAppBtn');
+        const manageSearch = document.getElementById('manageSearch');
+        const appsList = document.getElementById('appsList');
+        const editAppModal = document.getElementById('editAppModal');
+        const editAppId = document.getElementById('editAppId');
+        const editAppName = document.getElementById('editAppName');
+        const editAppIcon = document.getElementById('editAppIcon');
+        const editAppLink = document.getElementById('editAppLink');
+        const editAppBtnText = document.getElementById('editAppBtnText');
+        const editAppDesc = document.getElementById('editAppDesc');
+        const editAppRating = document.getElementById('editAppRating');
+        const updateAppBtn = document.getElementById('updateAppBtn');
+        const deleteAppBtn = document.getElementById('deleteAppBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const bannerType = document.getElementById('bannerType');
+        const bannerImageUrl = document.getElementById('bannerImageUrl');
+        const bannerVideoUrl = document.getElementById('bannerVideoUrl');
+        const bannerImageContainer = document.getElementById('bannerImageContainer');
+        const bannerVideoContainer = document.getElementById('bannerVideoContainer');
+        const backgroundType = document.getElementById('backgroundType');
+        const bgImageUrl = document.getElementById('bgImageUrl');
+        const bgVideoUrl = document.getElementById('bgVideoUrl');
+        const bgImageContainer = document.getElementById('bgImageContainer');
+        const bgVideoContainer = document.getElementById('bgVideoContainer');
+        const siteTitle = document.getElementById('siteTitle');
+        const footerTextInput = document.getElementById('footerTextInput');
+        const defaultBtnText = document.getElementById('defaultBtnText');
+        const ytLinkInput = document.getElementById('ytLinkInput');
+        const tgLinkInput = document.getElementById('tgLinkInput');
+        const igLinkInput = document.getElementById('igLinkInput');
+        const maintenanceToggle = document.getElementById('maintenanceToggle');
+        const ratingsToggle = document.getElementById('ratingsToggle');
+        const siteTheme = document.getElementById('siteTheme');
+        const newAdminPin = document.getElementById('newAdminPin');
+        const changePinBtn = document.getElementById('changePinBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+
+        // Global Variables
+        let appsData = [];
+        let sectionsData = [];
+        let settingsData = {};
+        let adminAuthenticated = false;
+        const defaultPin = "8469";
+        let currentAdminPin = defaultPin;
+        let mostViewedAppId = null;
+        let activeFilters = {
+            search: '',
+            tags: []
+        };
+        let pressTimer = null;
+        const PRESS_DURATION = 2000; // 2 seconds for long press
+
+        // Initialize the app
+        function initApp() {
+            checkConnection();
+            setupEventListeners();
+            loadSettings();
+            loadApps();
+            animateLoadingScreen();
+        }
+
+        // Check internet connection
+        function checkConnection() {
+            if (!navigator.onLine) {
+                showOfflineFallback();
+            }
+        }
+
+        // Show offline fallback
+        function showOfflineFallback() {
+            offlineFallback.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Hide offline fallback
+        function hideOfflineFallback() {
+            offlineFallback.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Connection events
+            window.addEventListener('online', hideOfflineFallback);
+            window.addEventListener('offline', showOfflineFallback);
+            retryConnectionBtn.addEventListener('click', () => {
+                if (navigator.onLine) {
+                    hideOfflineFallback();
+                    location.reload();
+                }
+            });
+
+            // Theme and contrast toggles
+            themeToggle.addEventListener('click', toggleTheme);
+            contrastToggle.addEventListener('click', toggleContrast);
+
+            // Long press on store title to show PIN popup
+            storeTitle.addEventListener('mousedown', startPressTimer);
+            storeTitle.addEventListener('touchstart', startPressTimer);
+            storeTitle.addEventListener('mouseup', cancelPressTimer);
+            storeTitle.addEventListener('mouseleave', cancelPressTimer);
+            storeTitle.addEventListener('touchend', cancelPressTimer);
+            storeTitle.addEventListener('touchcancel', cancelPressTimer);
+
+            // Admin panel
+            cancelLoginBtn.addEventListener('click', hidePinPopup);
+            loginBtn.addEventListener('click', attemptAdminLogin);
+            closeAdminPanel.addEventListener('click', closeAdmin);
+
+            // Admin tabs
+            adminTabs.forEach(tab => {
+                tab.addEventListener('click', () => switchAdminTab(tab.dataset.tab));
+            });
+
+            // Search functionality
+            searchInput.addEventListener('input', handleSearchInput);
+            searchBtn.addEventListener('click', performSearch);
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+
+            // App submission
+            submitAppBtn.addEventListener('click', submitNewApp);
+
+            // App management
+            refreshStatsBtn.addEventListener('click', refreshStats);
+            clearCacheBtn.addEventListener('click', clearCache);
+            backupDataBtn.addEventListener('click', backupData);
+            manageSearch.addEventListener('input', filterManageApps);
+
+            // Settings
+            bannerType.addEventListener('change', toggleBannerType);
+            backgroundType.addEventListener('change', toggleBackgroundType);
+            changePinBtn.addEventListener('click', changeAdminPin);
+            saveSettingsBtn.addEventListener('click', saveSettings);
+
+            // Edit app modal
+            updateAppBtn.addEventListener('click', updateApp);
+            deleteAppBtn.addEventListener('click', deleteApp);
+            cancelEditBtn.addEventListener('click', () => editAppModal.classList.add('hidden'));
+
+            // Ripple effect
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('ripple') || e.target.closest('.ripple')) {
+                    const target = e.target.classList.contains('ripple') ? e.target : e.target.closest('.ripple');
+                    const rect = target.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple-effect');
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    
+                    target.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                }
+            });
+
+            // Web share API
+            if (navigator.share) {
+                // Add share buttons to app cards when they're loaded
+            }
+        }
+
+        // Start long press timer
+        function startPressTimer(e) {
+            // Prevent context menu on mobile
+            if (e.type === 'touchstart') {
+                e.preventDefault();
+            }
+            
+            pressTimer = setTimeout(() => {
+                showPinPopup();
+            }, PRESS_DURATION);
+        }
+
+        // Cancel long press timer
+        function cancelPressTimer() {
+            if (pressTimer) {
+                clearTimeout(pressTimer);
+                pressTimer = null;
+            }
+        }
+
+        // Show PIN popup
+        function showPinPopup() {
+            pinPopup.classList.remove('hidden');
+            adminPin.focus();
+            cancelPressTimer();
+        }
+
+        // Hide PIN popup
+        function hidePinPopup() {
+            pinPopup.classList.add('hidden');
+            adminPin.value = '';
+        }
+
+        // Attempt admin login
+        function attemptAdminLogin() {
+            const enteredPin = adminPin.value;
+            if (enteredPin === currentAdminPin) {
+                adminAuthenticated = true;
+                hidePinPopup();
+                openAdmin();
+                showToast('Admin access granted');
+            } else {
+                showToast('Invalid PIN', 'error');
+                adminPin.value = '';
+                adminPin.focus();
+            }
+        }
+
+        // Open admin panel
+        function openAdmin() {
+            adminPanel.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            refreshStats();
+        }
+
+        // Close admin panel
+        function closeAdmin() {
+            adminPanel.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Switch admin tabs
+        function switchAdminTab(tabId) {
+            adminTabs.forEach(tab => {
+                if (tab.dataset.tab === tabId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            tabContents.forEach(content => {
+                if (content.id === `${tabId}Tab`) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        }
+
+        // Animate loading screen
+        function animateLoadingScreen() {
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                }, 500);
+            }, 1500);
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            const icon = themeToggle.querySelector('i');
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else if (document.documentElement.classList.contains('light')) {
+                document.documentElement.classList.remove('light');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                // Auto theme would be handled by media query in a real implementation
+            } else {
+                document.documentElement.classList.add('dark');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+
+        // Toggle high contrast
+        function toggleContrast() {
+            document.body.classList.toggle('high-contrast');
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            toastMessage.textContent = message;
+            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-dark text-white px-6 py-3 rounded-full shadow-lg glass toast';
+            toast.classList.add(type === 'error' ? 'bg-accent' : 'bg-primary');
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Load settings from Firebase
+        function loadSettings() {
+            database.ref('settings').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    settingsData = data;
+                    applySettings(data);
+                    
+                    // Update admin panel settings if open
+                    if (adminAuthenticated) {
+                        updateAdminSettings(data);
+                    }
+                }
+            });
+        }
+
+        // Apply settings to the UI
+        function applySettings(settings) {
+            // Site title
+            if (settings.siteTitle) {
+                document.title = settings.siteTitle;
+                storeTitle.textContent = settings.siteTitle;
+            }
+
+            // Footer text
+            if (settings.footerText) {
+                footerText.textContent = settings.footerText;
+            }
+
+            // Social links
+            if (settings.socialLinks) {
+                if (settings.socialLinks.youtube) {
+                    ytLink.href = settings.socialLinks.youtube;
+                    contactButton.querySelector('a').href = settings.socialLinks.telegram || '#';
+                }
+                if (settings.socialLinks.telegram) {
+                    tgLink.href = settings.socialLinks.telegram;
+                }
+                if (settings.socialLinks.instagram) {
+                    igLink.href = settings.socialLinks.instagram;
+                }
+            }
+
+            // Banner settings
+            if (settings.banner) {
+                if (settings.banner.type === 'image' && settings.banner.imageUrl) {
+                    bannerType.value = 'image';
+                    bannerImageUrl.value = settings.banner.imageUrl;
+                    bannerImage.src = settings.banner.imageUrl;
+                    imageBanner.classList.remove('hidden');
+                    videoBanner.classList.add('hidden');
+                    bannerContainer.classList.remove('hidden');
+                } else if (settings.banner.type === 'video' && settings.banner.videoUrl) {
+                    bannerType.value = 'video';
+                    bannerVideoUrl.value = settings.banner.videoUrl;
+                    bannerVideo.src = settings.banner.videoUrl;
+                    imageBanner.classList.add('hidden');
+                    videoBanner.classList.remove('hidden');
+                    bannerContainer.classList.remove('hidden');
+                } else {
+                    bannerContainer.classList.add('hidden');
+                }
+            }
+
+            // Background settings
+            if (settings.background) {
+                if (settings.background.type === 'image' && settings.background.imageUrl) {
+                    backgroundType.value = 'image';
+                    bgImageUrl.value = settings.background.imageUrl;
+                    backgroundImage.src = settings.background.imageUrl;
+                    backgroundImage.classList.remove('hidden');
+                    backgroundVideo.classList.add('hidden');
+                } else if (settings.background.type === 'video' && settings.background.videoUrl) {
+                    backgroundType.value = 'video';
+                    bgVideoUrl.value = settings.background.videoUrl;
+                    backgroundVideo.src = settings.background.videoUrl;
+                    backgroundImage.classList.add('hidden');
+                    backgroundVideo.classList.remove('hidden');
+                } else {
+                    backgroundImage.classList.add('hidden');
+                    backgroundVideo.classList.add('hidden');
+                }
+            }
+
+            // Maintenance mode
+            if (settings.maintenanceMode) {
+                maintenanceOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                maintenanceOverlay.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Admin PIN
+            if (settings.adminPin) {
+                currentAdminPin = settings.adminPin;
+            }
+
+            // Theme
+            if (settings.theme) {
+                siteTheme.value = settings.theme;
+                applyTheme(settings.theme);
+            }
+        }
+
+        // Apply theme
+        function applyTheme(theme) {
+            const icon = themeToggle.querySelector('i');
+            if (theme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else if (theme === 'dark') {
+                document.documentElement.classList.remove('light');
+                document.documentElement.classList.add('dark');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            } else {
+                // Auto theme - would use prefers-color-scheme in a real implementation
+                document.documentElement.classList.remove('light');
+                document.documentElement.classList.add('dark');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+
+        // Update admin panel with settings
+        function updateAdminSettings(settings) {
+            // Site info
+            if (settings.siteTitle) siteTitle.value = settings.siteTitle;
+            if (settings.footerText) footerTextInput.value = settings.footerText;
+            if (settings.defaultBtnText) defaultBtnText.value = settings.defaultBtnText;
+
+            // Social links
+            if (settings.socialLinks) {
+                if (settings.socialLinks.youtube) ytLinkInput.value = settings.socialLinks.youtube;
+                if (settings.socialLinks.telegram) tgLinkInput.value = settings.socialLinks.telegram;
+                if (settings.socialLinks.instagram) igLinkInput.value = settings.socialLinks.instagram;
+            }
+
+            // Banner settings
+            if (settings.banner) {
+                bannerType.value = settings.banner.type || 'image';
+                if (settings.banner.imageUrl) bannerImageUrl.value = settings.banner.imageUrl;
+                if (settings.banner.videoUrl) bannerVideoUrl.value = settings.banner.videoUrl;
+                toggleBannerType();
+            }
+
+            // Background settings
+            if (settings.background) {
+                backgroundType.value = settings.background.type || 'image';
+                if (settings.background.imageUrl) bgImageUrl.value = settings.background.imageUrl;
+                if (settings.background.videoUrl) bgVideoUrl.value = settings.background.videoUrl;
+                toggleBackgroundType();
+            }
+
+            // Toggles
+            if (settings.maintenanceMode !== undefined) {
+                maintenanceToggle.checked = settings.maintenanceMode;
+            }
+            if (settings.showRatings !== undefined) {
+                ratingsToggle.checked = settings.showRatings;
+            }
+            if (settings.theme) {
+                siteTheme.value = settings.theme;
+            }
+            if (settings.adminPin) {
+                newAdminPin.value = '';
+            }
+        }
+
+        // Load apps from Firebase
+        function loadApps() {
+            database.ref('apps').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    appsData = Object.entries(data).map(([id, app]) => ({ id, ...app }));
+                    renderApps(appsData);
+                    renderManageApps(appsData);
+                    calculateStats(appsData);
+                } else {
+                    appsData = [];
+                    appSections.innerHTML = '<div class="text-center py-12 text-secondary">No apps available yet. Check back later!</div>';
+                    appsList.innerHTML = '<div class="text-center py-4 text-secondary">No apps added yet</div>';
+                }
+            });
+
+            database.ref('sections').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    sectionsData = data;
+                } else {
+                    // Default sections if none exist in Firebase
+                    sectionsData = {
+                        topPicks: { title: '🎯 Top Picks', tag: 'VIP' },
+                        trending: { title: '🔥 Trending', tag: 'TRENDING' },
+                        newReleases: { title: '📦 New Releases', tag: 'NEW' },
+                        modded: { title: '⚙️ Modded Apps', tag: 'MOD' }
+                    };
+                    database.ref('sections').set(sectionsData);
+                }
+            });
+        }
+
+        // Render apps to the UI
+        function renderApps(apps) {
+            if (!apps || apps.length === 0) {
+                appSections.innerHTML = '<div class="text-center py-12 text-secondary">No apps available yet. Check back later!</div>';
+                return;
+            }
+
+            // Filter apps based on active filters
+            let filteredApps = [...apps];
+            if (activeFilters.search) {
+                const searchTerm = activeFilters.search.toLowerCase();
+                filteredApps = filteredApps.filter(app => 
+                    app.name.toLowerCase().includes(searchTerm) || 
+                    app.description.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (activeFilters.tags.length > 0) {
+                filteredApps = filteredApps.filter(app => 
+                    app.tags && activeFilters.tags.some(tag => app.tags.includes(tag))
+                );
+            }
+
+            // If we're filtering, show all filtered apps in one section
+            if (activeFilters.search || activeFilters.tags.length > 0) {
+                appSections.innerHTML = `
+                    <section class="mb-12 slide-up">
+                        <h2 class="text-xl font-bold mb-6 glass p-3 rounded-lg inline-block">Search Results</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            ${filteredApps.map(app => createAppCard(app)).join('')}
+                        </div>
+                    </section>
+                `;
+                return;
+            }
+
+            // Otherwise, show apps in their respective sections
+            let sectionsHTML = '';
+            
+            // First find and display the most viewed app prominently
+            if (mostViewedAppId) {
+                const mostViewed = apps.find(app => app.id === mostViewedAppId);
+                if (mostViewed) {
+                    sectionsHTML += `
+                        <section class="mb-12 slide-up">
+                            <h2 class="text-xl font-bold mb-6 glass p-3 rounded-lg inline-block">🌟 Most Viewed</h2>
+                            <div class="grid grid-cols-1 gap-6">
+                                ${createAppCard(mostViewed, true)}
+                            </div>
+                        </section>
+                    `;
+                }
+            }
+
+            // Then display apps by sections
+            for (const [sectionId, section] of Object.entries(sectionsData)) {
+                const sectionApps = apps.filter(app => app.tags && app.tags.includes(section.tag));
+                if (sectionApps.length > 0) {
+                    sectionsHTML += `
+                        <section class="mb-12 slide-up">
+                            <h2 class="text-xl font-bold mb-6 glass p-3 rounded-lg inline-block">${section.title}</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                ${sectionApps.map(app => createAppCard(app)).join('')}
+                            </div>
+                        </section>
+                    `;
+                }
+            }
+
+            // If no sections have apps (shouldn't happen but just in case)
+            if (sectionsHTML === '' && apps.length > 0) {
+                sectionsHTML = `
+                    <section class="mb-12 slide-up">
+                        <h2 class="text-xl font-bold mb-6 glass p-3 rounded-lg inline-block">All Apps</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            ${apps.map(app => createAppCard(app)).join('')}
+                        </div>
+                    </section>
+                `;
+            }
+
+            appSections.innerHTML = sectionsHTML;
+
+            // Add event listeners to all download buttons
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const appId = this.dataset.appId;
+                    incrementDownloadCount(appId);
+                    showToast('Download started');
+                });
+            });
+
+            // Add event listeners to all copy link buttons
+            document.querySelectorAll('.copy-link-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const appId = this.dataset.appId;
+                    const app = apps.find(a => a.id === appId);
+                    if (app) {
+                        navigator.clipboard.writeText(app.link).then(() => {
+                            showToast('Link copied to clipboard');
+                        });
+                    }
+                });
+            });
+
+            // Add event listeners to all share buttons if Web Share API is supported
+            if (navigator.share) {
+                document.querySelectorAll('.share-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const appId = this.dataset.appId;
+                        const app = apps.find(a => a.id === appId);
+                        if (app) {
+                            navigator.share({
+                                title: app.name,
+                                text: app.description,
+                                url: app.link
+                            }).catch(err => {
+                                console.log('Error sharing:', err);
+                            });
+                        }
+                    });
+                });
+            }
+        }
+
+        // Create an app card HTML element
+        function createAppCard(app, isFeatured = false) {
+            const tagsHTML = app.tags ? app.tags.map(tag => {
+                let tagClass = '';
+                if (tag === 'NEW') tagClass = 'tag-new';
+                if (tag === 'MOD') tagClass = 'tag-mod';
+                if (tag === 'VIP') tagClass = 'tag-vip';
+                if (tag === 'TRENDING') tagClass = 'tag-trending';
+                return `<span class="tag ${tagClass}">${tag}</span>`;
+            }).join('') : '';
+
+            const ratingHTML = app.rating ? `
+                <div class="star-rating mt-2">
+                    ${'★'.repeat(app.rating)}${'☆'.repeat(5 - app.rating)}
+                </div>
+            ` : '';
+
+            const featuredBadge = isFeatured ? '<div class="most-viewed-badge absolute -top-2 -right-2 px-2 py-1 rounded-full text-xs font-bold">MOST VIEWED</div>' : '';
+
+            const viewsCount = app.views || 0;
+            const downloadsCount = app.downloads || 0;
+            const lastUpdated = app.updatedAt ? new Date(app.updatedAt).toLocaleDateString() : '';
+
+            return `
+                <div class="app-card glass p-4 rounded-xl relative transition-all duration-300 card-glow hover:shadow-lg ${isFeatured ? 'border-2 border-accent' : ''}">
+                    ${featuredBadge}
+                    <div class="flex items-start mb-3">
+                        <img src="${app.icon}" alt="${app.name}" class="w-12 h-12 rounded-lg object-cover mr-3">
+                        <div class="flex-1">
+                            <h3 class="font-bold truncate">${app.name}</h3>
+                            <div class="flex flex-wrap gap-1 mt-1">
+                                ${tagsHTML}
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-secondary mb-3 line-clamp-2">${app.description}</p>
+                    ${ratingHTML}
+                    <div class="flex justify-between items-center mt-3 text-xs text-secondary">
+                        <span>👁️ ${viewsCount.toLocaleString()}</span>
+                        <span>⬇️ ${downloadsCount.toLocaleString()}</span>
+                    </div>
+                    ${lastUpdated ? `<div class="text-xs text-secondary mt-1">Updated: ${lastUpdated}</div>` : ''}
+                    <div class="flex space-x-2 mt-4">
+                        <button data-app-id="${app.id}" class="download-btn flex-1 bg-primary text-white py-2 rounded-lg hover:bg-opacity-90 transition ripple">
+                            ${app.buttonText || settingsData.defaultBtnText || 'Download'}
+                        </button>
+                        <button data-app-id="${app.id}" class="copy-link-btn bg-dark bg-opacity-50 text-white p-2 rounded-lg hover:bg-opacity-70 transition ripple">
+                            <i class="fas fa-link"></i>
+                        </button>
+                        ${navigator.share ? `
+                        <button data-app-id="${app.id}" class="share-btn bg-dark bg-opacity-50 text-white p-2 rounded-lg hover:bg-opacity-70 transition ripple">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Handle search input
+        function handleSearchInput(e) {
+            const query = e.target.value.trim().toLowerCase();
+            activeFilters.search = query;
+            
+            if (query.length > 0) {
+                const filteredApps = appsData.filter(app => 
+                    app.name.toLowerCase().includes(query) || 
+                    app.description.toLowerCase().includes(query)
+                );
+                
+                let dropdownHTML = '';
+                if (filteredApps.length > 0) {
+                    dropdownHTML = filteredApps.slice(0, 5).map(app => `
+                        <div class="p-3 hover:bg-glass cursor-pointer flex items-center" data-app-id="${app.id}">
+                            <img src="${app.icon}" alt="${app.name}" class="w-8 h-8 rounded mr-3">
+                            <div>
+                                <div class="font-medium">${app.name}</div>
+                                <div class="text-xs text-secondary truncate">${app.description}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    dropdownHTML = '<div class="p-3 text-secondary text-center">No apps found</div>';
+                }
+                
+                searchDropdown.innerHTML = dropdownHTML;
+                searchDropdown.classList.remove('hidden');
+                
+                // Add click event to dropdown items
+                searchDropdown.querySelectorAll('div[data-app-id]').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const appId = item.dataset.appId;
+                        const app = appsData.find(a => a.id === appId);
+                        if (app) {
+                            searchInput.value = app.name;
+                            activeFilters.search = app.name.toLowerCase();
+                            performSearch();
+                            searchDropdown.classList.add('hidden');
+                        }
+                    });
+                });
+            } else {
+                searchDropdown.classList.add('hidden');
+                if (activeFilters.tags.length === 0) {
+                    activeFilters.search = '';
+                    renderApps(appsData);
+                }
+            }
+        }
+
+        // Perform search
+        function performSearch() {
+            if (activeFilters.search || activeFilters.tags.length > 0) {
+                renderApps(appsData);
+            }
+        }
+
+        // Filter by tag
+        function filterByTag(tag) {
+            const index = activeFilters.tags.indexOf(tag);
+            if (index === -1) {
+                activeFilters.tags.push(tag);
+            } else {
+                activeFilters.tags.splice(index, 1);
+            }
+            
+            if (activeFilters.tags.length > 0) {
+                filterTags.classList.remove('hidden');
+                renderApps(appsData);
+            } else if (!activeFilters.search) {
+                filterTags.classList.add('hidden');
+                renderApps(appsData);
+            }
+        }
+
+        // Increment view count for an app
+        function incrementViewCount(appId) {
+            const appRef = database.ref(`apps/${appId}/views`);
+            appRef.transaction((currentViews) => {
+                return (currentViews || 0) + 1;
+            });
+        }
+
+        // Increment download count for an app
+        function incrementDownloadCount(appId) {
+            const appRef = database.ref(`apps/${appId}/downloads`);
+            appRef.transaction((currentDownloads) => {
+                return (currentDownloads || 0) + 1;
+            });
+        }
+
+        // Calculate stats for dashboard
+        function calculateStats(apps) {
+            let totalViews = 0;
+            let totalDownloads = 0;
+            let mostViewed = { views: 0, name: '-' };
+            let mostDownloaded = { downloads: 0, name: '-' };
+
+            apps.forEach(app => {
+                totalViews += app.views || 0;
+                totalDownloads += app.downloads || 0;
+
+                if ((app.views || 0) > mostViewed.views) {
+                    mostViewed = { views: app.views, name: app.name };
+                    mostViewedAppId = app.id;
+                }
+
+                if ((app.downloads || 0) > mostDownloaded.downloads) {
+                    mostDownloaded = { downloads: app.downloads, name: app.name };
+                }
+            });
+
+            totalApps.textContent = apps.length;
+            totalViews.textContent = totalViews.toLocaleString();
+            mostViewedApp.textContent = mostViewed.name;
+            mostDownloadedApp.textContent = mostDownloaded.name;
+        }
+
+        // Render apps in the manage apps tab
+        function renderManageApps(apps) {
+            if (!apps || apps.length === 0) {
+                appsList.innerHTML = '<div class="text-center py-4 text-secondary">No apps added yet</div>';
+                return;
+            }
+
+            appsList.innerHTML = apps.map(app => `
+                <div class="glass p-3 rounded-lg mb-2 flex justify-between items-center" data-app-id="${app.id}">
+                    <div class="flex items-center">
+                        <img src="${app.icon}" alt="${app.name}" class="w-10 h-10 rounded mr-3">
+                        <div>
+                            <div class="font-medium truncate max-w-xs">${app.name}</div>
+                            <div class="text-xs text-secondary">Views: ${app.views || 0} | Downloads: ${app.downloads || 0}</div>
+                        </div>
+                    </div>
+                    <button class="edit-app-btn bg-primary bg-opacity-20 px-3 py-1 rounded-lg hover:bg-opacity-30 transition">
+                        Edit
+                    </button>
+                </div>
+            `).join('');
+
+            // Add edit event listeners
+            document.querySelectorAll('.edit-app-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const appId = this.closest('[data-app-id]').dataset.appId;
+                    const app = apps.find(a => a.id === appId);
+                    if (app) {
+                        openEditAppModal(app);
+                    }
+                });
+            });
+        }
+
+        // Filter apps in manage view
+        function filterManageApps() {
+            const query = manageSearch.value.trim().toLowerCase();
+            if (query === '') {
+                renderManageApps(appsData);
+                return;
+            }
+
+            const filteredApps = appsData.filter(app => 
+                app.name.toLowerCase().includes(query) || 
+                app.description.toLowerCase().includes(query)
+            );
+
+            renderManageApps(filteredApps);
+        }
+
+        // Open edit app modal
+        function openEditAppModal(app) {
+            editAppId.value = app.id;
+            editAppName.value = app.name;
+            editAppIcon.value = app.icon;
+            editAppLink.value = app.link;
+            editAppBtnText.value = app.buttonText || '';
+            editAppDesc.value = app.description;
+            editAppRating.value = app.rating || 0;
+
+            // Clear all tag checkboxes first
+            document.querySelectorAll('.edit-tag-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            // Check the tags that this app has
+            if (app.tags) {
+                app.tags.forEach(tag => {
+                    const checkbox = document.querySelector(`.edit-tag-checkbox[value="${tag}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+
+            editAppModal.classList.remove('hidden');
+        }
+
+        // Submit new app
+        function submitNewApp() {
+            const name = appName.value.trim();
+            const icon = appIcon.value.trim();
+            const link = appLink.value.trim();
+            const buttonText = appBtnText.value.trim();
+            const description = appDesc.value.trim();
+            const rating = parseInt(appRating.value) || 0;
+
+            // Get selected tags
+            const tags = [];
+            document.querySelectorAll('.tag-checkbox:checked').forEach(checkbox => {
+                tags.push(checkbox.value);
+            });
+
+            if (!name || !icon || !link || !description) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+
+            const newApp = {
+                name,
+                icon,
+                link,
+                buttonText: buttonText || undefined,
+                description,
+                tags: tags.length > 0 ? tags : undefined,
+                rating: rating || undefined,
+                views: 0,
+                downloads: 0,
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                updatedAt: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            // Push to Firebase
+            const newAppRef = database.ref('apps').push();
+            newAppRef.set(newApp)
+                .then(() => {
+                    showToast('App added successfully');
+                    clearAddAppForm();
+                })
+                .catch(error => {
+                    showToast('Error adding app: ' + error.message, 'error');
+                });
+        }
+
+        // Clear add app form
+        function clearAddAppForm() {
+            appName.value = '';
+            appIcon.value = '';
+            appLink.value = '';
+            appBtnText.value = '';
+            appDesc.value = '';
+            appRating.value = '0';
+            document.querySelectorAll('.tag-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        // Update app
+        function updateApp() {
+            const appId = editAppId.value;
+            if (!appId) return;
+
+            const name = editAppName.value.trim();
+            const icon = editAppIcon.value.trim();
+            const link = editAppLink.value.trim();
+            const buttonText = editAppBtnText.value.trim();
+            const description = editAppDesc.value.trim();
+            const rating = parseInt(editAppRating.value) || 0;
+
+            // Get selected tags
+            const tags = [];
+            document.querySelectorAll('.edit-tag-checkbox:checked').forEach(checkbox => {
+                tags.push(checkbox.value);
+            });
+
+            if (!name || !icon || !link || !description) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+
+            const updates = {
+                name,
+                icon,
+                link,
+                buttonText: buttonText || undefined,
+                description,
+                tags: tags.length > 0 ? tags : undefined,
+                rating: rating || undefined,
+                updatedAt: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            database.ref(`apps/${appId}`).update(updates)
+                .then(() => {
+                    showToast('App updated successfully');
+                    editAppModal.classList.add('hidden');
+                })
+                .catch(error => {
+                    showToast('Error updating app: ' + error.message, 'error');
+                });
+        }
+
+        // Delete app
+        function deleteApp() {
+            const appId = editAppId.value;
+            if (!appId) return;
+
+            if (confirm('Are you sure you want to delete this app? This cannot be undone.')) {
+                database.ref(`apps/${appId}`).remove()
+                    .then(() => {
+                        showToast('App deleted successfully');
+                        editAppModal.classList.add('hidden');
+                    })
+                    .catch(error => {
+                        showToast('Error deleting app: ' + error.message, 'error');
+                    });
+            }
+        }
+
+        // Refresh stats
+        function refreshStats() {
+            calculateStats(appsData);
+            showToast('Stats refreshed');
+        }
+
+        // Clear cache
+        function clearCache() {
+            if ('caches' in window) {
+                caches.keys().then(cacheNames => {
+                    cacheNames.forEach(cacheName => {
+                        caches.delete(cacheName);
+                    });
+                    showToast('Cache cleared successfully');
+                });
+            } else {
+                showToast('Cache API not supported', 'error');
+            }
+        }
+
+        // Backup data
+        function backupData() {
+            // In a real app, this would export data to a file
+            // For this demo, we'll just show a toast
+            showToast('Data backup initiated (simulated)');
+        }
+
+        // Change admin PIN
+        function changeAdminPin() {
+            const newPin = newAdminPin.value.trim();
+            if (newPin.length !== 4 || !/^\d+$/.test(newPin)) {
+                showToast('PIN must be 4 digits', 'error');
+                return;
+            }
+
+            database.ref('settings/adminPin').set(newPin)
+                .then(() => {
+                    currentAdminPin = newPin;
+                    newAdminPin.value = '';
+                    showToast('Admin PIN updated successfully');
+                })
+                .catch(error => {
+                    showToast('Error updating PIN: ' + error.message, 'error');
+                });
+        }
+
+        // Save settings
+        function saveSettings() {
+            const settings = {
+                siteTitle: siteTitle.value.trim(),
+                footerText: footerTextInput.value.trim(),
+                defaultBtnText: defaultBtnText.value.trim(),
+                socialLinks: {
+                    youtube: ytLinkInput.value.trim(),
+                    telegram: tgLinkInput.value.trim(),
+                    instagram: igLinkInput.value.trim()
+                },
+                banner: {
+                    type: bannerType.value,
+                    imageUrl: bannerImageUrl.value.trim(),
+                    videoUrl: bannerVideoUrl.value.trim()
+                },
+                background: {
+                    type: backgroundType.value,
+                    imageUrl: bgImageUrl.value.trim(),
+                    videoUrl: bgVideoUrl.value.trim()
+                },
+                maintenanceMode: maintenanceToggle.checked,
+                showRatings: ratingsToggle.checked,
+                theme: siteTheme.value,
+                adminPin: currentAdminPin
+            };
+
+            database.ref('settings').set(settings)
+                .then(() => {
+                    showToast('Settings saved successfully');
+                })
+                .catch(error => {
+                    showToast('Error saving settings: ' + error.message, 'error');
+                });
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
